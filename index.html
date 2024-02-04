@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="../Stopwatch/stylesheet/style.css">
+</head>
+
+<body>
+    <div class="stopwatch">
+        <span id="display">00:00:00</span>
+        <button id="startStop">Start</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <script>
+        let startTime;
+        let interval;
+        let running = false;
+        let elapsedTime = 0;
+
+        const display = document.getElementById('display');
+        const startStopButton = document.getElementById('startStop');
+        const resetButton = document.getElementById('reset');
+
+        function formatTime(ms) {
+            const date = new Date(ms);//ye line ek object create kr ri h date naam ka jo ki ek specific point ko represent kr ri h time me 
+            return date.toISOString().substr(11, 8);//ye date ko ISO stream me se substring 11 se choose kr ri h like date is 
+            //2023-08-29T12:34:56.789Z to ye isme se 11th 
+            //index se start kr ra h and takes a length 8 
+        }
+
+        function updateDisplay() {
+            display.textContent = formatTime(elapsedTime);//takes the elapsed time in milliseconds and converts it to a
+            // formatted time string using the formatTime function
+        }
+
+        function startStop() {
+            if (running) {
+                clearInterval(interval);//This line stops the interval that's responsible for updating the stopwatch's display
+                startStopButton.textContent = 'Start';//ye tb tk start dikhta rhega jb tk apan ise click nhi krege
+            }
+            else {
+                startTime = Date.now() - elapsedTime;//This calculates a new startTime value by subtracting the current elapsedTime from the current timestamp.
+                //ensures that when the stopwatch is resumed after being paused, the correct starting point is used to keep accurate time.
+                interval = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    updateDisplay();
+                }, 1000);
+                startStopButton.textContent = 'Stop';
+            }
+            running = !running;
+        }
+
+        function reset() {
+            clearInterval(interval);
+            elapsedTime = 0;
+            updateDisplay();
+            startStopButton.textContent = 'Start';
+            running = false;
+        }
+
+        startStopButton.addEventListener('click', startStop);
+        resetButton.addEventListener('click', reset);
+    </script>
+
+</body>
+
+</html>
